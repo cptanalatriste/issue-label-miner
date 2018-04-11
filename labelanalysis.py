@@ -6,7 +6,7 @@ JIRA_V63_PRIORITIES = ['Blocker', 'Critical', 'Major', 'Minor', 'Trivial']
 # From: https://confluence.atlassian.com/jira064/what-is-an-issue-720416138.html
 JIRA_V64_PRIORITIES = ['Highest', 'High', 'Medium', 'Low', 'Lowest']
 
-# From: https://www.mediawiki.org/wiki/Bugzilla/
+# From: https://www.mediawiki.org/wiki/Bugzilla/Fields#Priority
 BUGZILLA_PRIORITIES = ['immediate', 'highest', 'high', 'normal', 'low', 'lowest']
 
 def get_repository_url(label_url):
@@ -42,6 +42,18 @@ def main():
                              'labels': ' '.join(repository_labels)})
 
     result_dataframe = pd.DataFrame(results_list)
+
+    using_priorities = result_dataframe[result_dataframe['using_priorities'] == True]
+    not_using_priorities = result_dataframe[result_dataframe['using_priorities'] == False]
+
+    print "len(repositories.index): " + str(len(repositories))
+
+    print "len(using_priorities.index): " + str(len(using_priorities.index)) + " " + str(
+        float(len(using_priorities.index)) / len(repositories))
+
+    print "len(not_using_priorities.index): " + str(len(not_using_priorities.index)) + " " + str(
+        float(len(not_using_priorities.index)) / len(repositories))
+
     result_dataframe.to_csv("repository_using_priorities.csv")
 
 

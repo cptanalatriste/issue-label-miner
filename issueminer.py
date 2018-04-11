@@ -9,12 +9,13 @@ import bson.json_util as json_util
 
 from pandas.io.json import json_normalize
 
-SEARCH_REPOSITORIES_URL = "https://api.github.com/search/repositories"
-LABELS_CSV_FILE =  "label_dataframe.csv"
+import minerconfig
 
-# TODO(cgavidia): Only for testing
-# PAGE_SIZE = 100
-PAGE_SIZE = 30
+SEARCH_REPOSITORIES_URL = "https://api.github.com/search/repositories"
+LABELS_CSV_FILE = "label_dataframe.csv"
+
+PAGE_SIZE = 100
+MAX_REPOSITORIES = 500
 
 
 def get_next_page(response):
@@ -22,7 +23,7 @@ def get_next_page(response):
 
     for link in link_headers:
         if 'rel="next"' in link:
-            return link.split(";")[0][1: -1]
+            return link.strip().split(";")[0][1: -1]
 
     return None
 
@@ -34,7 +35,7 @@ def get_labels(repositories):
         print "get_labels->request_url: " + str(request_url)
 
         try:
-            response = requests.get(request_url)
+            response = requests.get(request_url, headers=minerconfig.AUTH_HEADER)
             json_response = response.json()
             labels.extend(json_response)
         except Exception as e:
@@ -55,10 +56,10 @@ def search_repositories(query):
 
     request_url = SEARCH_REPOSITORIES_URL
 
-    while request_url is not None:
+    while request_url is not None and len(repositories) <= MAX_REPOSITORIES:
         print "search_repositories->request_url: " + str(request_url)
         try:
-            response = requests.get(request_url, params=search_parameters)
+            response = requests.get(request_url, params=search_parameters, headers=minerconfig.AUTH_HEADER)
             json_response = response.json()
 
             repositories.extend(json_response['items'])
@@ -71,7 +72,7 @@ def search_repositories(query):
             break
 
         # TODO(cgavidia): Only for testing
-        break
+        # break
 
     return repositories, labels
 
@@ -91,8 +92,8 @@ def main():
     repo_dataframe = to_dataframe(repositories)
     label_dataframe = to_dataframe(labels)
 
-    print repo_dataframe.columns
-    print label_dataframe.columns
+    print "len(repo_dataframe.index): " + str(len(repo_dataframe.index))
+    print "len(label_dataframe.index): " + str(len(label_dataframe.index))
 
     repo_dataframe.to_csv("repo_dataframe.csv", encoding='utf-8')
     label_dataframe.to_csv(LABELS_CSV_FILE, encoding='utf-8')
