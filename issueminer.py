@@ -13,6 +13,7 @@ import minerconfig
 
 SEARCH_REPOSITORIES_URL = "https://api.github.com/search/repositories"
 LABELS_CSV_FILE = "label_dataframe.csv"
+REPOSITORY_CSV_FILE = "repo_dataframe.csv"
 
 PAGE_SIZE = 100
 MAX_REPOSITORIES = 500
@@ -71,9 +72,6 @@ def search_repositories(query):
             print e
             break
 
-        # TODO(cgavidia): Only for testing
-        # break
-
     return repositories, labels
 
 
@@ -85,7 +83,7 @@ def to_dataframe(json_response):
 
 
 def main():
-    query = "created:>2018-01-01"
+    query = "created:>2017-01-01"
 
     repositories, labels = search_repositories(query)
 
@@ -95,7 +93,7 @@ def main():
     print "len(repo_dataframe.index): " + str(len(repo_dataframe.index))
     print "len(label_dataframe.index): " + str(len(label_dataframe.index))
 
-    repo_dataframe.to_csv("repo_dataframe.csv", encoding='utf-8')
+    repo_dataframe.to_csv(REPOSITORY_CSV_FILE, encoding='utf-8')
     label_dataframe.to_csv(LABELS_CSV_FILE, encoding='utf-8')
 
 

@@ -67,17 +67,18 @@ def main():
     for repository_url in repositories:
         label_series = labels_daframe[labels_daframe['repository_url'] == repository_url]
 
-        repository_labels = [label.lower() for label in label_series['name']]
+        repository_labels = [label.split() for label in label_series['name']]
+        repository_tokens = [token.lower() for token_list in repository_labels for token in token_list]
 
         label_colors = [get_colour_name(webcolors.hex_to_rgb("#" + str(color))) for color in label_series['color']]
 
-        using_priorities_text = is_using_priorities_from_text(repository_labels)
+        using_priorities_text = is_using_priorities_from_text(repository_tokens)
         using_priorities_color = is_using_priorities_from_color(label_colors)
 
         results_list.append({'repository_url': repository_url,
-                             'labels': ' '.join(repository_labels),
+                             'labels': ';'.join(repository_tokens),
                              'using_priorities_text': using_priorities_text,
-                             'label_colors': ' '.join(label_colors),
+                             'label_colors': ';'.join(label_colors),
                              'using_priorities_color': using_priorities_color,
                              'using_priorities': using_priorities_text or using_priorities_color})
 
