@@ -1,5 +1,6 @@
 import re
 
+import nltk
 import pandas as pd
 import webcolors
 
@@ -53,10 +54,13 @@ def get_repository_url(label_url):
 
 
 def is_using_priorities_from_text(label_collection):
-    repository_labels = [re.findall(r"[\w']+", label) for label in label_collection]
-    repository_tokens = [token.lower() for token_list in repository_labels for token in token_list]
+    porter_stemmer = nltk.PorterStemmer()
 
-    unified_terms = [priority_label.lower() for priority_label in
+    repository_labels = [re.findall(r"[\w']+", label) for label in label_collection]
+    repository_tokens = [porter_stemmer.stem(token.lower()) for token_list in repository_labels for token in
+                         token_list]
+
+    unified_terms = [porter_stemmer.stem(priority_label.lower()) for priority_label in
                      JIRA_V63_PRIORITIES + JIRA_V64_PRIORITIES + BUGZILLA_PRIORITIES + FIELD_NAME]
 
     return bool(set(repository_tokens) & set(unified_terms))
