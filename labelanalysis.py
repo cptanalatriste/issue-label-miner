@@ -18,6 +18,7 @@ BUGZILLA_FIELDS = ["Priority", "Severity"]
 BUGZILLA_PRIORITIES = ['immediate', 'highest', 'high', 'normal', 'low', 'lowest']
 
 CONSOLIDATED_CSV_FILE = "repository_using_priorities.csv"
+USING_PRIORITIES_COLUMN = 'using_priorities'
 
 SAMPLE_CSV_FILE = "sample_repositories_with_labels.csv"
 SAMPLE_SIZE = 30
@@ -101,7 +102,7 @@ def main():
                              'using_priorities_text': using_priorities_text,
                              'label_colors': ';'.join(label_colors),
                              'using_priorities_color': using_priorities_color,
-                             'using_priorities': using_priorities_text or using_priorities_color})
+                             USING_PRIORITIES_COLUMN: using_priorities_text or using_priorities_color})
 
     result_dataframe = pd.DataFrame(results_list)
 
