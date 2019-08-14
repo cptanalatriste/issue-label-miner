@@ -11,6 +11,9 @@ JIRA_V64_PRIORITIES = ['Highest', 'High', 'Medium', 'Low', 'Lowest']
 # From: https://www.mediawiki.org/wiki/Bugzilla/Fields#Priority
 BUGZILLA_PRIORITIES = ['immediate', 'highest', 'high', 'normal', 'low', 'lowest']
 
+SAMPLE_FILE = "sample_file.csv"
+SAMPLE_SIZE = 30
+
 
 # From: https://stackoverflow.com/questions/9694165/convert-rgb-color-to-english-color-name-like-green-with-python?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
 def closest_colour(requested_colour):
@@ -67,6 +70,9 @@ def main():
     for repository_url in repositories:
         label_series = labels_daframe[labels_daframe['repository_url'] == repository_url]
 
+        custom_labels = label_series[~label_series['default']]
+        num_custom_labels = len(custom_labels.index)
+
         repository_labels = [label.split() for label in label_series['name']]
         repository_tokens = [token.lower() for token_list in repository_labels for token in token_list]
 
@@ -80,14 +86,17 @@ def main():
                              'using_priorities_text': using_priorities_text,
                              'label_colors': ';'.join(label_colors),
                              'using_priorities_color': using_priorities_color,
-                             'using_priorities': using_priorities_text or using_priorities_color})
+                             'using_priorities': using_priorities_text or using_priorities_color,
+                             'num_custom_labels': num_custom_labels})
 
     result_dataframe = pd.DataFrame(results_list)
 
+    using_custom_labels = result_dataframe[result_dataframe['num_custom_labels'] > 0]
     using_priorities = result_dataframe[result_dataframe['using_priorities'] == True]
     not_using_priorities = result_dataframe[result_dataframe['using_priorities'] == False]
 
     print "len(repositories.index): " + str(len(repositories))
+    print "len(using_custom_labels.index): " + str(len(using_custom_labels))
 
     print "len(using_priorities.index): " + str(len(using_priorities.index)) + " " + str(
         float(len(using_priorities.index)) / len(repositories))
@@ -98,6 +107,9 @@ def main():
     result_file = "repository_using_priorities.csv"
     result_dataframe.to_csv(result_file)
     print "Results written in " + result_file
+
+    using_custom_labels.sample(n=SAMPLE_SIZE, random_state=321).to_csv(SAMPLE_FILE)
+    print SAMPLE_SIZE, "samples saved in ", SAMPLE_FILE
 
 
 if __name__ == "__main__":
