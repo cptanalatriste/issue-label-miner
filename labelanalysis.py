@@ -19,6 +19,7 @@ BUGZILLA_PRIORITIES = ['immediate', 'highest', 'high', 'normal', 'low', 'lowest'
 
 CONSOLIDATED_CSV_FILE = "repository_using_priorities.csv"
 USING_PRIORITIES_COLUMN = 'using_priorities'
+REPOSITORY_URL_COLUMN = 'repository_url'
 
 SAMPLE_CSV_FILE = "sample_repositories_with_labels.csv"
 SAMPLE_CUSTOM_LABELS_FILE = "sample_file.csv"
@@ -101,7 +102,7 @@ def main():
         using_priorities_text = is_using_priorities_from_text(label_series['name'])
         using_priorities_color = is_using_priorities_from_color(label_colors)
 
-        results_list.append({'repository_url': repository_url,
+        results_list.append({REPOSITORY_URL_COLUMN: repository_url,
                              'labels': ';'.join(repository_tokens),
                              'using_priorities_text': using_priorities_text,
                              'label_colors': ';'.join(label_colors),
