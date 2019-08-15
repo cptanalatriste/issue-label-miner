@@ -1,6 +1,8 @@
 from sklearn.metrics import classification_report
 import pandas as pd
 
+from pycm import *
+
 import labelanalysis
 
 ASSESMENT_COLUMN = "manual_assessment"
@@ -19,9 +21,8 @@ def get_validation_report(assessed_dataframe):
 
     target_names = ["not using priorities", "using priorities"]
 
-    print(pd.crosstab(heuristic_results.values, manual_validation.values, rownames=["Heuristic"], colnames=["Manual"],
-                      margins=False,
-                      margins_name="Total"))
+    confusion_matrix = ConfusionMatrix(actual_vector=manual_validation.values, predict_vector=heuristic_results.values)
+    print(confusion_matrix)
 
     print(classification_report(y_pred=heuristic_results, y_true=manual_validation,
                                 target_names=target_names))
