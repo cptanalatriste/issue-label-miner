@@ -12,6 +12,8 @@ def get_validation_report(assessed_dataframe):
     consolidated_dataframe = pd.merge(assessed_dataframe, heuristic_dataframe_all,
                                       on=labelanalysis.REPOSITORY_URL_COLUMN)
 
+    consolidated_dataframe.to_csv("consolidated_dataframe.csv")
+
     heuristic_results = consolidated_dataframe[labelanalysis.USING_PRIORITIES_COLUMN].astype(int)
     manual_validation = consolidated_dataframe[ASSESMENT_COLUMN].astype(int)
 
